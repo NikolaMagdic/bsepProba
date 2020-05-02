@@ -2,40 +2,39 @@ package com.example.demo.dto;
 
 import java.util.Date;
 
-import com.example.demo.model.IssuerData;
 import com.example.demo.model.Subject;
 
 public class CertificateDTO {
 
-	private Subject subject;
-	private IssuerData issuerData;
+	private Subject subjectRequest;
+	private Subject subjectIssuer;
 	private Date startDate;
 	private Date endDate;
 	
 	public CertificateDTO() {}
 
-	public CertificateDTO(Subject subject, IssuerData issuerData, Date startDate, Date endDate) {
+	public CertificateDTO(Subject subjectRequest, Subject subjectIssuer, Date startDate, Date endDate) {
 		super();
-		this.subject = subject;
-		this.issuerData = issuerData;
+		this.subjectRequest = subjectRequest;
+		this.subjectIssuer = subjectIssuer;
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
 
-	public Subject getSubject() {
-		return subject;
+	public Subject getSubjectRequest() {
+		return subjectRequest;
 	}
 
-	public void setSubject(Subject subject) {
-		this.subject = subject;
+	public void setSubjectRequest(Subject subjectRequest) {
+		this.subjectRequest = subjectRequest;
 	}
 
-	public IssuerData getIssuerData() {
-		return issuerData;
+	public Subject getSubjectIssuer() {
+		return subjectIssuer;
 	}
 
-	public void setIssuerData(IssuerData issuerData) {
-		this.issuerData = issuerData;
+	public void setSubjectIssuer(Subject subjectIssuer) {
+		this.subjectIssuer = subjectIssuer;
 	}
 
 	public Date getStartDate() {

@@ -4,6 +4,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.text.ParseException;
@@ -16,24 +17,28 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Certificate {
 
-	private Subject subject;
+	private Subject subjectRequest;
+	private Subject subjectIssuer;
 	private SubjectData subjectData;
 	private IssuerData issuerData;
 	private KeyPair keyPair;
 	private Date startDate;
 	private Date endDate;
+	private String alias;
 	
 	
 	public Certificate() {}
 	
-	public Certificate(Subject subject, Date startDate, Date endDate) {
+	public Certificate(Subject subjectRequest, Subject subjectIssuer, Date startDate, Date endDate) {
 		Security.addProvider(new BouncyCastleProvider());
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.subject = subject;
+		this.subjectRequest = subjectRequest;
+		this.subjectIssuer = subjectIssuer;
 		
-		this.subjectData = generateSubjectData(subject);
-		
+		this.keyPair = generateKeyPair();
+		this.subjectData = generateSubjectData(subjectRequest);
+		this.issuerData = generateIssuerData(this.keyPair.getPrivate(), subjectIssuer);
 	}
 	
 	private SubjectData generateSubjectData(Subject subject) {
@@ -57,7 +62,7 @@ public class Certificate {
 		    builder.addRDN(BCStyle.C, subject.getCountry());
 		    builder.addRDN(BCStyle.E, subject.getEmail());
 		    //UID (USER ID) je ID korisnika
-		    builder.addRDN(BCStyle.UID, subject.getUid().toString());
+		    builder.addRDN(BCStyle.UID, "12345");
 		    
 		    //Kreiraju se podaci za sertifikat, sto ukljucuje:
 		    // - javni kljuc koji se vezuje za sertifikat
@@ -74,6 +79,20 @@ public class Certificate {
 		return null;
 	}
 
+	
+	private IssuerData generateIssuerData(PrivateKey issuerKey, Subject subject) {
+		X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+		builder.addRDN(BCStyle.CN, subject.getCommonName());
+		builder.addRDN(BCStyle.SURNAME, subject.getSurname());
+		builder.addRDN(BCStyle.GIVENNAME, subject.getGivenName());
+		builder.addRDN(BCStyle.O, subject.getOrganization());
+		builder.addRDN(BCStyle.OU, subject.getOrganizationUnit());
+		builder.addRDN(BCStyle.C, subject.getCountry());
+		builder.addRDN(BCStyle.E, subject.getEmail());
+		builder.addRDN(BCStyle.UID, "12345");
+	
+		return new IssuerData(issuerKey, builder.build());
+	}
 	
 	private KeyPair generateKeyPair() {
         try {

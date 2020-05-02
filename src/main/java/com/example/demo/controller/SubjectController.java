@@ -27,7 +27,7 @@ public class SubjectController {
 	private SubjectService subjectService;
 	
 	@GetMapping(value = "/all")
-	@PreAuthorize("hasRole('ADMIN')")
+	//@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<SubjectDTO>> getAllSubjects(){
 		
 		List<Subject> subjects = subjectService.findAll();
@@ -41,7 +41,7 @@ public class SubjectController {
 	}
 	
 	@GetMapping(value ="/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	//@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<SubjectDTO> getSubject(@PathVariable Long id){
 		
 		Subject subject = subjectService.findOne(id);
