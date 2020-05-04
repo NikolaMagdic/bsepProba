@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.certificates.CertificateGenerator;
 import com.example.demo.dto.CertificateDTO;
 import com.example.demo.dto.SubjectDTO;
+import com.example.demo.model.AliasData;
 import com.example.demo.model.Certificate;
 import com.example.demo.model.IssuerData;
 import com.example.demo.model.Subject;
 import com.example.demo.model.SubjectData;
+import com.example.demo.service.AliasDataService;
 import com.example.demo.service.CertificateService;
 import com.example.demo.service.SubjectService;
 
@@ -37,6 +39,8 @@ public class CertificateController {
 	
 	@Autowired
 	private CertificateService certificateService;
+	@Autowired
+	private AliasDataService aliasDataService;
 	
 	//Vraca sve subjekte koji mogu biti issueri, samo one koji su CA
 	@GetMapping(value = "/issuers")
@@ -108,6 +112,10 @@ public class CertificateController {
 		}
 		
 		Certificate c = certificateService.convertFromDTO(certificateDTO);
+		AliasData ad= new AliasData();
+		ad.setId(22222L);
+		ad.setAlias(certificateDTO.getAlias());
+		aliasDataService.save(ad);
 		certificateService.save(c);
 		
 		return new ResponseEntity<>(certificateDTO, HttpStatus.CREATED);
