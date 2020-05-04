@@ -8,7 +8,7 @@ import com.example.demo.model.Subject;
 
 public interface SubjectRepository extends JpaRepository<Subject, Long>{
 	
-	Subject findOneByUid(Long Uid);
+	Subject findOneById(Long Id);
 	
 	List<Subject> findAll();
 	

@@ -1,119 +1,60 @@
 package com.example.demo.model;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.bouncycastle.asn1.x500.X500NameBuilder;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
+@Entity
 public class Certificate {
 
-	private Subject subjectRequest;
-	private Subject subjectIssuer;
-	private SubjectData subjectData;
-	private IssuerData issuerData;
-	private KeyPair keyPair;
-	private Date startDate;
-	private Date endDate;
-	private String alias;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
+	@Column(name = "subjectid")
+	private Long subjectId;
+	
+	@Column(name = "issuerid")
+	private Long issuerId;
+	
+	@Column(name = "startdate")
+	private Date startDate;
+	
+	@Column(name = "enddate")
+	private Date endDate;
+	
+	@Column(name = "alias")
+	private String alias;
 	
 	public Certificate() {}
 	
-	public Certificate(Subject subjectRequest, Subject subjectIssuer, Date startDate, Date endDate) {
-		Security.addProvider(new BouncyCastleProvider());
+	public Certificate(Long subjectId, Long issuerId, Date startDate, Date endDate, String alias) {
+		super();
+		this.subjectId = subjectId;
+		this.issuerId = issuerId;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.subjectRequest = subjectRequest;
-		this.subjectIssuer = subjectIssuer;
-		
-		this.keyPair = generateKeyPair();
-		this.subjectData = generateSubjectData(subjectRequest);
-		this.issuerData = generateIssuerData(this.keyPair.getPrivate(), subjectIssuer);
-	}
-	
-	private SubjectData generateSubjectData(Subject subject) {
-		try {
-			KeyPair keyPairSubject = generateKeyPair();
-			
-			//Datumi od kad do kad vazi sertifikat
-			SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
-			Date startDate = iso8601Formater.parse("2017-12-31");
-			Date endDate = iso8601Formater.parse("2022-12-31");
-			
-			//Serijski broj sertifikata
-			String sn="1";
-			//klasa X500NameBuilder pravi X500Name objekat koji predstavlja podatke o vlasniku
-			X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-		    builder.addRDN(BCStyle.CN, subject.getCommonName());
-		    builder.addRDN(BCStyle.SURNAME, subject.getSurname());
-		    builder.addRDN(BCStyle.GIVENNAME, subject.getGivenName());
-		    builder.addRDN(BCStyle.O, subject.getOrganization());
-		    builder.addRDN(BCStyle.OU, subject.getOrganizationUnit());
-		    builder.addRDN(BCStyle.C, subject.getCountry());
-		    builder.addRDN(BCStyle.E, subject.getEmail());
-		    //UID (USER ID) je ID korisnika
-		    builder.addRDN(BCStyle.UID, "12345");
-		    
-		    //Kreiraju se podaci za sertifikat, sto ukljucuje:
-		    // - javni kljuc koji se vezuje za sertifikat
-		    // - podatke o vlasniku
-		    // - serijski broj sertifikata
-		    // - od kada do kada vazi sertifikat
-		    
-		    SubjectData sd = new SubjectData(keyPairSubject.getPublic(), builder.build(), sn);
-
-		    return sd;
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return null;
+		this.alias = alias;
 	}
 
-	
-	private IssuerData generateIssuerData(PrivateKey issuerKey, Subject subject) {
-		X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-		builder.addRDN(BCStyle.CN, subject.getCommonName());
-		builder.addRDN(BCStyle.SURNAME, subject.getSurname());
-		builder.addRDN(BCStyle.GIVENNAME, subject.getGivenName());
-		builder.addRDN(BCStyle.O, subject.getOrganization());
-		builder.addRDN(BCStyle.OU, subject.getOrganizationUnit());
-		builder.addRDN(BCStyle.C, subject.getCountry());
-		builder.addRDN(BCStyle.E, subject.getEmail());
-		builder.addRDN(BCStyle.UID, "12345");
-	
-		return new IssuerData(issuerKey, builder.build());
-	}
-	
-	private KeyPair generateKeyPair() {
-        try {
-			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA"); 
-			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-			keyGen.initialize(2048, random);
-			return keyGen.generateKeyPair();
-        } catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			e.printStackTrace();
-		}
-        return null;
+	public Long getSubjectId() {
+		return subjectId;
 	}
 
-	public SubjectData getSubjectData() {
-		return subjectData;
+	public void setSubjectId(Long subjectId) {
+		this.subjectId = subjectId;
 	}
 
-	public void setSubjectData(SubjectData subjectData) {
-		this.subjectData = subjectData;
+	public Long getIssuerId() {
+		return issuerId;
+	}
+
+	public void setIssuerId(Long issuerId) {
+		this.issuerId = issuerId;
 	}
 
 	public Date getStartDate() {
@@ -132,13 +73,13 @@ public class Certificate {
 		this.endDate = endDate;
 	}
 
-	public IssuerData getIssuerData() {
-		return issuerData;
+	public String getAlias() {
+		return alias;
 	}
 
-	public void setIssuerData(IssuerData issuerData) {
-		this.issuerData = issuerData;
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
-	
+
 	
 }

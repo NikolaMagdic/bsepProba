@@ -11,7 +11,7 @@ public class Subject {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uid;
+    private Long id;
 	
 	@Column(name = "commonname")
     private String commonName;
@@ -56,12 +56,12 @@ public class Subject {
 		this.email = email;
 	}
 
-	public Long getUid() {
-		return uid;
+	public Long getId() {
+		return id;
 	}
 
-	public void setUid(Long uid) {
-		this.uid = uid;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getCommonName() {

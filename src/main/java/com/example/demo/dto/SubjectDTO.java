@@ -4,7 +4,6 @@ import com.example.demo.model.Subject;
 
 public class SubjectDTO {
 
-	private Long uid;
     private String commonName;
     private String surname;	
     private String givenName;	
@@ -19,10 +18,9 @@ public class SubjectDTO {
     	
     }
     
-	public SubjectDTO(Long uid, String commonName, String surname, String givenName, String organization, String organizationUnit,
+	public SubjectDTO(String commonName, String surname, String givenName, String organization, String organizationUnit,
 			String country, String email, Boolean isCA, Boolean hasCertificate) {
 		super();
-		this.uid = uid;
 		this.commonName = commonName;
 		this.surname = surname;
 		this.givenName = givenName;
@@ -36,7 +34,6 @@ public class SubjectDTO {
 	
 	public SubjectDTO(Subject s) {
 		super();
-		this.uid = s.getUid();
 		this.commonName = s.getCommonName();
 		this.surname = s.getSurname();
 		this.givenName = s.getGivenName();
