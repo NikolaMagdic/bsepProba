@@ -34,6 +34,12 @@ public class Subject {
 	@Column(name = "email")
     private String email;
     
+	@Column(name = "isca")
+	private Boolean isCA;
+	
+	@Column(name = "hascertificate")
+	private Boolean hasCertificate;
+	
     public Subject() {
     	
     }
@@ -112,6 +118,22 @@ public class Subject {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Boolean getIsCA() {
+		return isCA;
+	}
+
+	public void setIsCA(Boolean isCA) {
+		this.isCA = isCA;
+	}
+
+	public Boolean getHasCertificate() {
+		return hasCertificate;
+	}
+
+	public void setHasCertificate(Boolean hasCertificate) {
+		this.hasCertificate = hasCertificate;
 	}
     
     

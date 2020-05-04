@@ -86,6 +86,7 @@ public class KeyStoreReader {
             ks.load(in, keyStorePass.toCharArray());
 
             if(ks.isKeyEntry(alias)) {
+            	System.out.println("USAO**************************************************");
                 Certificate cert = ks.getCertificate(alias);
                 return cert;
             }

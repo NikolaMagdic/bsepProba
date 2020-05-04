@@ -72,4 +72,14 @@ public class KeyStoreWriter {
             e.printStackTrace();
         }
     }
+
+	public KeyStore getKeyStore() {
+		return keyStore;
+	}
+
+	public void setKeyStore(KeyStore keyStore) {
+		this.keyStore = keyStore;
+	}
+    
+    
 }

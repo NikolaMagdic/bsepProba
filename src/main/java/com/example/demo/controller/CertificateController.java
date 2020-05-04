@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class CertificateController {
 	
 	private CertificateService certificateService;
 	
-	//Vraca sve subjekte koji mogu biti issueri, za sad apsolutno sve subjekte
+	//Vraca sve subjekte koji mogu biti issueri, samo one koji su CA
 	@GetMapping(value = "/issuers")
 	public ResponseEntity<List<SubjectDTO>> getIssuers(){
 		
@@ -37,14 +38,15 @@ public class CertificateController {
 		List<Subject> issuers = subjectService.findAll();
 		
 		for (Subject issuer : issuers) {
-			issuersDTO.add(new SubjectDTO(issuer));
+			if(issuer.getIsCA())
+				issuersDTO.add(new SubjectDTO(issuer));
 		}
 		
 		return new ResponseEntity<>(issuersDTO, HttpStatus.OK);
 		
 	}
 	
-	//Svi ponudjeni subject za sertifikat
+	//Svi ponudjeni subjecti za sertifikat
 	@GetMapping(value = "/subjects")
 	public ResponseEntity<List<SubjectDTO>> getSubjects(){
 		
@@ -52,7 +54,8 @@ public class CertificateController {
 		List<Subject> subjects = subjectService.findAll();
 		
 		for (Subject subject : subjects) {
-			subjectsDTO.add(new SubjectDTO(subject));
+			if(!subject.getHasCertificate())
+				subjectsDTO.add(new SubjectDTO(subject));
 		}
 		
 		return new ResponseEntity<>(subjectsDTO, HttpStatus.OK);
@@ -60,25 +63,32 @@ public class CertificateController {
 	}
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CertificateDTO> addCertificate(@RequestBody CertificateDTO certificateDTO){
+	public ResponseEntity<CertificateDTO> addRootCertificate(@RequestBody CertificateDTO certificateDTO){
 		
 		if(certificateDTO.getClass() == null)
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
-		
-		
+		System.out.println(certificateDTO.getSubjectRequest().getUid());
+		/*
+		Subject s = subjectService.findOne((Long)certificateDTO.getSubjectRequest().getUid());
+		s.setIsCA(true);
+		subjectService.save(s);
+		*/
 		Certificate certificate = new Certificate(certificateDTO.getSubjectRequest(), certificateDTO.getSubjectIssuer(), certificateDTO.getStartDate(), certificateDTO.getEndDate());
 		
 		CertificateGenerator cg = new CertificateGenerator();
 		X509Certificate cert = cg.generateCertificate(certificate.getSubjectData(),  certificate.getIssuerData(),  certificateDTO);
 
 		this.certificateService = new CertificateService();
-		this.certificateService.createCertificate(cert, certificate.getIssuerData().getPrivateKey());
+		try {
+			this.certificateService.createCertificate(cert, certificate.getIssuerData().getPrivateKey());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return new ResponseEntity<>(certificateDTO, HttpStatus.CREATED);
 		
 	}
-	
-	
 	
 }

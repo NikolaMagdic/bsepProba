@@ -10,15 +10,17 @@ public class CertificateDTO {
 	private Subject subjectIssuer;
 	private Date startDate;
 	private Date endDate;
+	private String alias;
 	
 	public CertificateDTO() {}
 
-	public CertificateDTO(Subject subjectRequest, Subject subjectIssuer, Date startDate, Date endDate) {
+	public CertificateDTO(Subject subjectRequest, Subject subjectIssuer, Date startDate, Date endDate, String alias) {
 		super();
 		this.subjectRequest = subjectRequest;
 		this.subjectIssuer = subjectIssuer;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.alias = alias;
 	}
 
 	public Subject getSubjectRequest() {
@@ -51,6 +53,14 @@ public class CertificateDTO {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 	
 	

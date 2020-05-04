@@ -16,7 +16,8 @@ public class SubjectService {
 	private SubjectRepository subjectRepository;
 	
 	public Subject findOne(Long id) {
-		return subjectRepository.findOneByUid(id);
+		return subjectRepository.findById(id).orElseGet(null);
+		
 	}
 	
 	public List<Subject> findAll(){

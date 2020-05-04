@@ -4,6 +4,7 @@ import com.example.demo.model.Subject;
 
 public class SubjectDTO {
 
+	private Long uid;
     private String commonName;
     private String surname;	
     private String givenName;	
@@ -11,14 +12,17 @@ public class SubjectDTO {
     private String organizationUnit;	
     private String country;	
     private String email;
+    private Boolean isCA;
+    private Boolean hasCertificate;
     
     public SubjectDTO() {
     	
     }
     
-	public SubjectDTO(String commonName, String surname, String givenName, String organization, String organizationUnit,
-			String country, String email) {
+	public SubjectDTO(Long uid, String commonName, String surname, String givenName, String organization, String organizationUnit,
+			String country, String email, Boolean isCA, Boolean hasCertificate) {
 		super();
+		this.uid = uid;
 		this.commonName = commonName;
 		this.surname = surname;
 		this.givenName = givenName;
@@ -26,10 +30,13 @@ public class SubjectDTO {
 		this.organizationUnit = organizationUnit;
 		this.country = country;
 		this.email = email;
+		this.isCA = isCA;
+		this.hasCertificate = hasCertificate;
 	}
 	
 	public SubjectDTO(Subject s) {
 		super();
+		this.uid = s.getUid();
 		this.commonName = s.getCommonName();
 		this.surname = s.getSurname();
 		this.givenName = s.getGivenName();
@@ -37,6 +44,8 @@ public class SubjectDTO {
 		this.organizationUnit = s.getOrganizationUnit();
 		this.country = s.getCountry();
 		this.email = s.getEmail();
+		this.isCA = s.getIsCA();
+		this.hasCertificate = s.getHasCertificate();
 	}
 
 	public String getCommonName() {
@@ -93,6 +102,22 @@ public class SubjectDTO {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Boolean getIsCA() {
+		return isCA;
+	}
+
+	public void setIsCA(Boolean isCA) {
+		this.isCA = isCA;
+	}
+
+	public Boolean getHasCertificate() {
+		return hasCertificate;
+	}
+
+	public void setHasCertificate(Boolean hasCertificate) {
+		this.hasCertificate = hasCertificate;
 	}
     
     
