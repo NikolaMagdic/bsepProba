@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.certificates.CertificateGenerator;
 import com.example.demo.dto.CertificateDTO;
 import com.example.demo.dto.SubjectDTO;
+import com.example.demo.enums.CertificateType;
 import com.example.demo.model.AliasData;
 import com.example.demo.model.Certificate;
 import com.example.demo.model.IssuerData;
@@ -74,11 +75,15 @@ public class CertificateController {
 		
 	}
 	
-	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+	//Pravljenje self-signed sertifikata
+	@PostMapping(value = "/createRoot", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CertificateDTO> addRootCertificate(@RequestBody CertificateDTO certificateDTO){
 		
 		//Ovo ne znam gde da stavim, ima u primeru sa vezbi
 		Security.addProvider(new BouncyCastleProvider());
+		
+		//Da znamo u koji keystore da ga bacimo
+		CertificateType ct = CertificateType.ROOT;
 		
 		if(certificateDTO.getClass() == null)
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -90,6 +95,7 @@ public class CertificateController {
 		}
 		
 		subject.setIsCA(true);
+		subject.setHasCertificate(true);
 		subjectService.save(subject);
 		
 		Subject issuer = subjectService.findOne((Long)certificateDTO.getIssuerId());
@@ -99,27 +105,72 @@ public class CertificateController {
 		SubjectData subjectData = certificateService.generateSubjectData(subject);
 		IssuerData issuerData = certificateService.generateIssuerData(keyPair.getPrivate(), issuer);
 		
-		//Certificate certificate = new Certificate(certificateDTO.getSubjectRequest(), certificateDTO.getSubjectIssuer(), certificateDTO.getStartDate(), certificateDTO.getEndDate());
-		
 		CertificateGenerator cg = new CertificateGenerator();
 		X509Certificate cert = cg.generateCertificate(subjectData, issuerData, certificateDTO);
 
 		try {
-			certificateService.createCertificate(cert, issuerData.getPrivateKey());
+			certificateService.createCertificate(certificateDTO.getAlias(), certificateDTO.getPassword(),  cert, issuerData.getPrivateKey(), ct);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		Certificate c = certificateService.convertFromDTO(certificateDTO);
+		certificateService.save(c);
+		
 		AliasData ad= new AliasData();
 		ad.setId(22222L);
 		ad.setAlias(certificateDTO.getAlias());
 		aliasDataService.save(ad);
-		certificateService.save(c);
 		
 		return new ResponseEntity<>(certificateDTO, HttpStatus.CREATED);
 		
 	}
+	
+	//Pravljenje potpisanih sertifikata
+	@PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CertificateDTO> addCertificate(@RequestBody CertificateDTO certificateDTO){
+		
+		Security.addProvider(new BouncyCastleProvider());
+		
+		//Da znamo u koji keystore da ga bacimo
+		CertificateType ct = CertificateType.INTERMEDIATE;
+		
+		if(certificateDTO.getClass() == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		Subject subject = subjectService.findOne((Long)certificateDTO.getSubjectId());
+		
+		if(subject == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		
+		subject.setIsCA(false);
+		subject.setHasCertificate(true);
+		subjectService.save(subject);
+		
+		Subject issuer = subjectService.findOne((Long)certificateDTO.getIssuerId());
+		
+		KeyPair keyPair = certificateService.generateKeyPair();
+		
+		SubjectData subjectData = certificateService.generateSubjectData(subject);
+		IssuerData issuerData = certificateService.generateIssuerData(keyPair.getPrivate(), issuer);
+		
+		CertificateGenerator cg = new CertificateGenerator();
+		X509Certificate cert = cg.generateCertificate(subjectData, issuerData, certificateDTO);
+
+		try {
+			certificateService.createCertificate(certificateDTO.getAlias(), certificateDTO.getPassword(), cert, issuerData.getPrivateKey(), ct);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Certificate c = certificateService.convertFromDTO(certificateDTO);
+		certificateService.save(c);
+		
+		return new ResponseEntity<>(certificateDTO, HttpStatus.CREATED);
+	}
+	
 	
 }

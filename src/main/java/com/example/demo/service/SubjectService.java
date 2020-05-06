@@ -37,6 +37,8 @@ public class SubjectService {
 		subject.setOrganization(subjectDTO.getOrganization());
 		subject.setCountry(subjectDTO.getCountry());
 		subject.setEmail(subjectDTO.getEmail());
+		subject.setIsCA(subjectDTO.getIsCA());
+		subject.setHasCertificate(subjectDTO.getHasCertificate());
 		
 		return subject;
 	}

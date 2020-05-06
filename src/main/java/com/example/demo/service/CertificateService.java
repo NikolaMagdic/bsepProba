@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.CertificateDTO;
+import com.example.demo.enums.CertificateType;
 import com.example.demo.keystores.KeyStoreReader;
 import com.example.demo.keystores.KeyStoreWriter;
 import com.example.demo.model.Certificate;
@@ -121,7 +122,7 @@ public class CertificateService {
 	}
 	
 	
-	public X509Certificate createCertificate(X509Certificate cert, PrivateKey pk) throws IOException {
+	public X509Certificate createCertificate(String alias, String pass, X509Certificate cert, PrivateKey pk, CertificateType ct) throws IOException {
 
 		this.keyStoreWriter = new KeyStoreWriter(); 
 		
@@ -130,16 +131,29 @@ public class CertificateService {
 		//BufferedInputStream in = new BufferedInputStream(new FileInputStream("/data/keystore.p12"));
 		char[] password = "123".toCharArray();
 		
+		// Ovu liniju pisemo u if-u kada prvi put pravimo keystore (kada jos ne postoje)
 		//keyStoreWriter.loadKeyStore(null, password);
-		keyStoreWriter.loadKeyStore("keystorenas", password);
-		keyStoreWriter.saveKeyStore("keystorenas", password);
-			
-		keyStoreWriter.write("asfa", pk, "123".toCharArray(), cert);
-		keyStoreWriter.saveKeyStore("keystorenas", password);
+		
+		if(ct.equals(CertificateType.ROOT)) {
+			keyStoreWriter.loadKeyStore("keystoreroot", password);
+			keyStoreWriter.saveKeyStore("keystoreroot", password);
+				
+			keyStoreWriter.write(alias, pk, pass.toCharArray(), cert);
+			keyStoreWriter.saveKeyStore("keystoreroot", password);
+			// Za sad sve trpam u ovaj dok ne razdvojimo intermediate i end-entity
+		} else {
+			keyStoreWriter.loadKeyStore("keystorenijeroot", password);
+			keyStoreWriter.saveKeyStore("keystorenijeroot", password);
+				
+			keyStoreWriter.write(alias, pk, pass.toCharArray(), cert);
+			keyStoreWriter.saveKeyStore("keystorenijeroot", password);
+		}
+		
+
 		//test
 		this.keyStoreReader = new KeyStoreReader();
 		
-		cert = (X509Certificate) keyStoreReader.readCertificate("keystorenas", "123", "asfa");
+		cert = (X509Certificate) keyStoreReader.readCertificate("keystoreroot", "123", "root1");
 		if(cert != null) {
 			System.out.println(cert);
 		}else {

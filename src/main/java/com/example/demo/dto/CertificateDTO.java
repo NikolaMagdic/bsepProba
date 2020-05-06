@@ -9,16 +9,18 @@ public class CertificateDTO {
 	private Date startDate;
 	private Date endDate;
 	private String alias;
+	private String password;
 	
 	public CertificateDTO() {}
 
-	public CertificateDTO(Long subjectId, Long issuerId, Date startDate, Date endDate, String alias) {
+	public CertificateDTO(Long subjectId, Long issuerId, Date startDate, Date endDate, String alias, String password) {
 		super();
 		this.subjectId = subjectId;
 		this.issuerId = issuerId;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.alias = alias;
+		this.password = password;
 	}
 
 	public Long getSubjectId() {
@@ -61,6 +63,13 @@ public class CertificateDTO {
 		this.alias = alias;
 	}
 	
-	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	
 }

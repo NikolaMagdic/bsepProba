@@ -45,7 +45,7 @@ public class Subject {
     }
 
 	public Subject(String commonName, String surname, String givenName,
-			String organization, String organizationUnit, String country, String email) {
+			String organization, String organizationUnit, String country, String email, Boolean isCA, Boolean hasCertificate) {
 		super();
 		this.commonName = commonName;
 		this.surname = surname;
@@ -54,6 +54,8 @@ public class Subject {
 		this.organizationUnit = organizationUnit;
 		this.country = country;
 		this.email = email;
+		this.isCA = isCA;
+		this.hasCertificate = hasCertificate;
 	}
 
 	public Long getId() {
