@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.List;
+
 import org.hibernate.sql.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class AliasDataService {
 	}
 	public AliasData save(AliasData aliasData) {
 		return aliasDataRepository.save(aliasData);
+	}
+	public List<AliasData> findAll(){
+		return aliasDataRepository.findAll();
 	}
 	
 }

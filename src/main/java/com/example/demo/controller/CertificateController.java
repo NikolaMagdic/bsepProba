@@ -22,6 +22,7 @@ import com.example.demo.certificates.CertificateGenerator;
 import com.example.demo.dto.CertificateDTO;
 import com.example.demo.dto.SubjectDTO;
 import com.example.demo.enums.CertificateType;
+import com.example.demo.keystores.KeyStoreReader;
 import com.example.demo.model.AliasData;
 import com.example.demo.model.Certificate;
 import com.example.demo.model.IssuerData;
@@ -35,6 +36,8 @@ import com.example.demo.service.SubjectService;
 @RequestMapping(value = "api/certificate")
 public class CertificateController {
 	
+	//@Autowired
+	private KeyStoreReader keyStoreReader;
 	@Autowired
 	private SubjectService subjectService;
 	
@@ -119,6 +122,7 @@ public class CertificateController {
 		certificateService.save(c);
 		
 		AliasData ad= new AliasData();
+		System.out.println("Iz nekog razloga ulazis ovde?????");
 		ad.setId(22222L);
 		ad.setAlias(certificateDTO.getAlias());
 		aliasDataService.save(ad);
@@ -167,6 +171,35 @@ public class CertificateController {
 		}
 		
 		Certificate c = certificateService.convertFromDTO(certificateDTO);
+		AliasData ad= new AliasData();
+		ad.setId(33333L);
+		ad.setAlias(certificateDTO.getAlias());
+		
+		this.keyStoreReader = new KeyStoreReader();
+		
+		List<AliasData> aliasDatas = aliasDataService.findAll();
+		for (AliasData ad2 : aliasDatas){
+			cert = (X509Certificate) keyStoreReader.readCertificate("keystoreroot", "123", ad2.getAlias());
+			if (cert != null) {
+				System.out.println("Udjes u root?");
+				
+				ad.setAliasData(ad2);
+				aliasDataService.save(ad);
+				break;
+			}
+			else{
+				System.out.println("Udjes u else?");
+				cert = (X509Certificate) keyStoreReader.readCertificate("keystorenijeroot", "123", ad2.getAlias());
+				if (cert != null) {
+					ad.setAliasData(ad2);
+					aliasDataService.save(ad);
+					break;
+				}
+			}
+			
+			ad2.getAliases().add(ad);
+		}
+		//aliasDataService.save(ad);
 		certificateService.save(c);
 		
 		return new ResponseEntity<>(certificateDTO, HttpStatus.CREATED);
