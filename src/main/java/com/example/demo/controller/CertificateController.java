@@ -172,13 +172,14 @@ public class CertificateController {
 		
 		Certificate c = certificateService.convertFromDTO(certificateDTO);
 		AliasData ad= new AliasData();
-		ad.setId(33333L);
+		ad.setId(null);
 		ad.setAlias(certificateDTO.getAlias());
 		
 		this.keyStoreReader = new KeyStoreReader();
 		
 		List<AliasData> aliasDatas = aliasDataService.findAll();
 		for (AliasData ad2 : aliasDatas){
+			if(ad2.getId() == certificateDTO.getIssuerId()){
 			cert = (X509Certificate) keyStoreReader.readCertificate("keystoreroot", "123", ad2.getAlias());
 			if (cert != null) {
 				System.out.println("Udjes u root?");
@@ -196,7 +197,7 @@ public class CertificateController {
 					break;
 				}
 			}
-			
+			}
 			ad2.getAliases().add(ad);
 		}
 		//aliasDataService.save(ad);
