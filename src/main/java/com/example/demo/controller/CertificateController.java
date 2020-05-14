@@ -1,8 +1,16 @@
 package com.example.demo.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +31,7 @@ import com.example.demo.dto.CertificateDTO;
 import com.example.demo.dto.SubjectDTO;
 import com.example.demo.enums.CertificateType;
 import com.example.demo.keystores.KeyStoreReader;
+import com.example.demo.keystores.KeyStoreWriter;
 import com.example.demo.model.AliasData;
 import com.example.demo.model.Certificate;
 import com.example.demo.model.IssuerData;
@@ -40,7 +49,8 @@ public class CertificateController {
 	private KeyStoreReader keyStoreReader;
 	@Autowired
 	private SubjectService subjectService;
-	
+    private KeyStore keyStore;
+
 	@Autowired
 	private CertificateService certificateService;
 	@Autowired
@@ -119,6 +129,7 @@ public class CertificateController {
 		}
 		
 		Certificate c = certificateService.convertFromDTO(certificateDTO);
+		c.setIsRevoked(false);
 		certificateService.save(c);
 		
 		AliasData ad= new AliasData();
@@ -171,6 +182,7 @@ public class CertificateController {
 		}
 		
 		Certificate c = certificateService.convertFromDTO(certificateDTO);
+		c.setIsRevoked(false);
 		AliasData ad= new AliasData();
 		ad.setId(null);
 		ad.setAlias(certificateDTO.getAlias());
@@ -205,6 +217,68 @@ public class CertificateController {
 		
 		return new ResponseEntity<>(certificateDTO, HttpStatus.CREATED);
 	}
+	
+	@PostMapping(value = "/revoke", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CertificateDTO> revokeCertificate(@RequestBody CertificateDTO certificateDTO) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException{
+		
+		Security.addProvider(new BouncyCastleProvider());
+		
+		//Da znamo u koji keystore da ga bacimo
+		CertificateType ct = CertificateType.ROOT;
+		
+		if(certificateDTO.getClass() == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	//	KeyStore ks;
+		
+	//		 ks = KeyStore.getInstance(KeyStore.getDefaultType());
+		
+	/*	try {
+			ks.load(new FileInputStream(new File("keystoreroot")), "123".toCharArray());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		List<AliasData> aliasDatas = aliasDataService.findAll();
+		for(AliasData ad : aliasDatas){
+			if(ad.getAlias().equals(certificateDTO.getAlias())){
+				certificateService.findOne(ad.getId()).setIsRevoked(true);
+				if(!ad.getAliases().isEmpty()){
+					for(AliasData ad2 : ad.getAliases()){
+						
+						removeFromBase(ad2);
+					}
+				}
+			}
+		}
+		//ks.deleteEntry(certificateDTO.getAlias());
+		//ks.store(new FileOutputStream(new File("keystoreroot")), "123".toCharArray());
+
+		return new ResponseEntity<>(certificateDTO, HttpStatus.GONE);
+	}
+	public void removeFromBase(AliasData ad){
+		certificateService.findOne(ad.getId()).setIsRevoked(true);
+		if(!ad.getAliases().isEmpty()){
+			for(AliasData ad2 : ad.getAliases()){
+				removeFromBase(ad2);
+			}
+		}
+		
+		AliasData adZaBrisanje = aliasDataService.findOne(ad.getId());
+		if(adZaBrisanje != null){
+		//	aliasDataService.remove(ad.getId());
+			aliasDataService.save(adZaBrisanje);
+		}
+	}
+	
 	
 	
 }

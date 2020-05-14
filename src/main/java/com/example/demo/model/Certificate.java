@@ -30,15 +30,19 @@ public class Certificate {
 	@Column(name = "alias")
 	private String alias;
 	
+	@Column(name = "isRevoked")
+	private Boolean isRevoked;
+	
 	public Certificate() {}
 	
-	public Certificate(Long subjectId, Long issuerId, Date startDate, Date endDate, String alias) {
+	public Certificate(Long subjectId, Long issuerId, Date startDate, Date endDate, String alias ) {
 		super();
 		this.subjectId = subjectId;
 		this.issuerId = issuerId;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.alias = alias;
+		this.isRevoked = false;
 	}
 
 	public Long getSubjectId() {
@@ -79,6 +83,14 @@ public class Certificate {
 
 	public void setAlias(String alias) {
 		this.alias = alias;
+	}
+
+	public Boolean getIsRevoked() {
+		return isRevoked;
+	}
+
+	public void setIsRevoked(Boolean isRevoked) {
+		this.isRevoked = isRevoked;
 	}
 
 	

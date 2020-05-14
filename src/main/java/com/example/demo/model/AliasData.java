@@ -27,7 +27,7 @@ public class AliasData {
 	private String alias;
 	@OneToMany(mappedBy = "aliasData", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<AliasData> aliases = new HashSet<AliasData>();
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private AliasData aliasData;
 	
 	public Long getId() {

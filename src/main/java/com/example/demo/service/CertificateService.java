@@ -137,12 +137,12 @@ public class CertificateService {
 		if(ct.equals(CertificateType.ROOT)) {
 			keyStoreWriter.loadKeyStore("keystoreroot", password);
 			keyStoreWriter.saveKeyStore("keystoreroot", password);
-				
 			keyStoreWriter.write(alias, pk, pass.toCharArray(), cert);
 			keyStoreWriter.saveKeyStore("keystoreroot", password);
 			// Za sad sve trpam u ovaj dok ne razdvojimo intermediate i end-entity
 		} else {
 			keyStoreWriter.loadKeyStore("keystorenijeroot", password);
+			
 			keyStoreWriter.saveKeyStore("keystorenijeroot", password);
 				
 			keyStoreWriter.write(alias, pk, pass.toCharArray(), cert);

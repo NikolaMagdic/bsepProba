@@ -27,5 +27,8 @@ public class AliasDataService {
 	public List<AliasData> findAll(){
 		return aliasDataRepository.findAll();
 	}
+	public void remove(Long id){
+		aliasDataRepository.deleteById(id);
+	}
 	
 }
