@@ -10,10 +10,12 @@ public class CertificateDTO {
 	private Date endDate;
 	private String alias;
 	private String password;
+	private KeyUsageDTO keyUsageDTO;
+	private ExtendedKeyUsageDTO extendedKeyUsageDTO;
 	
 	public CertificateDTO() {}
 
-	public CertificateDTO(Long subjectId, Long issuerId, Date startDate, Date endDate, String alias, String password) {
+	public CertificateDTO(Long subjectId, Long issuerId, Date startDate, Date endDate, String alias, String password, KeyUsageDTO keyUsageDTO, ExtendedKeyUsageDTO extendedKeyUsageDTO) {
 		super();
 		this.subjectId = subjectId;
 		this.issuerId = issuerId;
@@ -21,6 +23,8 @@ public class CertificateDTO {
 		this.endDate = endDate;
 		this.alias = alias;
 		this.password = password;
+		this.keyUsageDTO = new KeyUsageDTO(keyUsageDTO);
+		this.extendedKeyUsageDTO = new ExtendedKeyUsageDTO(extendedKeyUsageDTO);
 	}
 
 	public Long getSubjectId() {
@@ -69,6 +73,22 @@ public class CertificateDTO {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public KeyUsageDTO getKeyUsageDTO() {
+		return keyUsageDTO;
+	}
+
+	public void setKeyUsageDTO(KeyUsageDTO keyUsageDTO) {
+		this.keyUsageDTO = keyUsageDTO;
+	}
+
+	public ExtendedKeyUsageDTO getExtendedKeyUsageDTO() {
+		return extendedKeyUsageDTO;
+	}
+
+	public void setExtendedKeyUsageDTO(ExtendedKeyUsageDTO extendedKeyUsageDTO) {
+		this.extendedKeyUsageDTO = extendedKeyUsageDTO;
 	}
 
 	
