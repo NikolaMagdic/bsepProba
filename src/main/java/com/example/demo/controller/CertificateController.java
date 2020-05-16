@@ -278,7 +278,11 @@ public class CertificateController {
 			aliasDataService.save(adZaBrisanje);
 		}
 	}
-	
+	@GetMapping(value = "/isValid", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> isItAValidCertificate(@RequestBody CertificateDTO certificateDTO) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException{
+		Certificate c = certificateService.convertFromDTO(certificateDTO);
+		return new ResponseEntity<>(c.isValid(), HttpStatus.OK);
+	}
 	
 	
 }

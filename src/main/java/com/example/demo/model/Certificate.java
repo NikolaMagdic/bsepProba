@@ -1,5 +1,9 @@
 package com.example.demo.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -91,6 +95,19 @@ public class Certificate {
 
 	public void setIsRevoked(Boolean isRevoked) {
 		this.isRevoked = isRevoked;
+	}
+	public Boolean isValid(){
+		DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		Date now = new Date();  
+		   System.out.println(df.format(now));
+		   if((now).compareTo(this.startDate) < 0){
+			   return false;
+		   }
+		   else if(now.compareTo(this.endDate) > 0){
+			   return false;
+		   }
+		   return true;
+		
 	}
 
 	
